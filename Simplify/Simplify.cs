@@ -10,7 +10,7 @@ namespace Simplifing
         public string Input { get; }
         public bool? IsValid { get; private set; }
 
-        public List<string> Contrarquments { get; private set; } = new List<string>();
+        public List<string> Contraarguments { get; private set; } = new List<string>();
 
         private SimplifyLexicalParser _lexicalParser;
 
@@ -27,7 +27,8 @@ namespace Simplifing
 
             if (_lexicalParser.VariablesCount == 0)
             {
-                return node.Calculate();
+                IsValid = node.Calculate();
+                return IsValid.Value;
             }
 
             var variableValues = Enumerable.Range(0, _lexicalParser.VariablesCount).Select(v => false).ToArray();
@@ -42,9 +43,13 @@ namespace Simplifing
                     StringBuilder stringBuilder = new StringBuilder();
                     for (int i = 0; i < _lexicalParser.VariablesCount; i++)
                     {
-                        stringBuilder.Append(_lexicalParser.VariableNames[i] + " = " + variableValues[i] + Environment.NewLine);
+                        stringBuilder.Append(_lexicalParser.VariableNames[i] + " = " + variableValues[i]);
+                        if (i < _lexicalParser.VariablesCount - 1)
+                        {
+                            stringBuilder.Append(Environment.NewLine);
+                        }
                     }
-                    Contrarquments.Add(stringBuilder.ToString());
+                    Contraarguments.Add(stringBuilder.ToString());
                 }
 
                 var wasChanged = false;
@@ -67,6 +72,7 @@ namespace Simplifing
                 }
             }
 
+            IsValid = alwaysTrue;
             return alwaysTrue;
         }
 
@@ -75,9 +81,10 @@ namespace Simplifing
             return CreateTree(tokens, 0, out _);
         }
 
-        private Node CreateTree(List<Token> tokens, int startIndex, out int endIndex)
+        private Node CreateTree(List<Token> tokens, int startIndex, out int endIndex, bool isSubFormula = true)
         {
             var token = tokens[startIndex];
+
             switch (token.TokenType)
             {
                 case TokenType.OpenBracket:
@@ -127,10 +134,11 @@ namespace Simplifing
                         endIndex = startIndex + 1;
                         return node;
                     }
+                default:
+                    {
+                        throw new Exception("Unexpected token type:" + token.TokenType);
+                    }
             }
-
-            endIndex = -1;
-            return null;
         }
     }
 }

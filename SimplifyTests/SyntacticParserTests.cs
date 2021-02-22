@@ -5,7 +5,7 @@ namespace SimplifyTests
 {
     public class SyntacticParserTests
     {
-        public void CheckIsValid(string formula, bool expectedIsValid = true)
+        public static void CheckIsValid(string formula, bool expectedIsValid = true)
         {
             var simplify = new Simplify(formula);
             var isValid = simplify.Check();
@@ -106,6 +106,12 @@ namespace SimplifyTests
         public void ContrapositionRule2()
         {
             CheckIsValid("(IFF (IMPLIES p q) (IMPLIES (NOT q) (NOT p)))");
+        }
+
+        [Test]
+        public void OrTrue_A()
+        {
+            CheckIsValid("OR TRUE a");
         }
     }
 }

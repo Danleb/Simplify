@@ -66,7 +66,12 @@ namespace Simplifing
                 {
                     var staticTokenMinIndex = StaticTokens.Keys.Select(name => Input.IndexOf(name, currentIndex))
                             .OrderBy(v => v)
-                            .First(v => v > -1);
+                            .FirstOrDefault(v => v > -1);
+                    if (staticTokenMinIndex < currentIndex)
+                    {
+                        staticTokenMinIndex = -1;
+                    }
+
                     var nextSpaceIndex = Input.IndexOf(Space, currentIndex);
 
                     int variableEndIndex;
@@ -81,7 +86,7 @@ namespace Simplifing
 
                     if (variableEndIndex == -1)
                     {
-                        variableEndIndex = Input.Length - 1;
+                        variableEndIndex = Input.Length;
                     }
 
                     var length = variableEndIndex - currentIndex;
