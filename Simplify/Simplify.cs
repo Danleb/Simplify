@@ -92,7 +92,7 @@ namespace Simplifing
             {
                 if (isSubFormula)
                 {
-                    throw new SyntaxException("Unexpected end of formula. Opening b");
+                    throw new SyntaxException("Unexpected end of formula. Opening bracket or identifier was expected.");
                 }
                 else
                 {

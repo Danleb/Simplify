@@ -29,6 +29,12 @@ namespace SimplifyTests
         }
 
         [Test]
+        public void ClosingBracket()
+        {
+            AssertFormula.ThrowsSyntaxException(")");
+        }
+
+        [Test]
         public void TrueAndFalse()
         {
             AssertFormula.IsInvalid("(AND TRUE FALSE)");
