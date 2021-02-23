@@ -22,6 +22,21 @@ namespace SimplifyTests
         }
 
         [Test]
+        public void VariableWithNumber()
+        {
+            var parser = new LexicalParser("a2");
+            var tokens = parser.Parse();
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(TokenType.Variable, tokens[0].TokenType);
+        }
+
+        [Test]
+        public void VariableNumberWithLetter()
+        {
+            AssertFormula.ThrowsLexicalException("2a2");
+        }
+
+        [Test]
         public void True()
         {
             var parser = new LexicalParser("TRUE");

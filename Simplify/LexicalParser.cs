@@ -94,10 +94,14 @@ namespace Simplifing
                     var variableName = Input.Substring(currentIndex, length);
                     foreach (var character in variableName)
                     {
-                        if (!char.IsLetter(character))
+                        if (!char.IsLetterOrDigit(character))
                         {
                             throw new LexicalException($"Unacceptable character in variable name: {character}.");
                         }
+                    }
+                    if (char.IsDigit(variableName[0]))
+                    {
+                        throw new LexicalException($"Variable name cannot start with digit.");
                     }
 
                     var variableIndex = _variableNames.IndexOf(variableName);
