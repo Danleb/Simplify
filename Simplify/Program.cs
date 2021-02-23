@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,55 +6,74 @@ namespace Simplifing
 {
     public class Program
     {
+        private static readonly string[] Comments =
+        {
+            "#",
+            "//",
+            ";"
+        };
+
         public static void Main(string[] args)
         {
-            var formulas = new List<string>();
             if (args.Length == 0 || args[0] == "-w")
             {
-                int formulaCounter = 1;
-                while (true)
-                {
-                    Console.Write($"{formulaCounter++}. ");
-                    var formula = Console.ReadLine();
-                    ProcessFormula(formula);
-                }
+                ExecuteEndlessInput();
+                return;
             }
             else if (args[0] == "-f")
             {
                 var path = args.Skip(1).Aggregate(string.Concat);
-                if (!File.Exists(path))
-                {
-                    Console.WriteLine("Such file doesn't exists: " + path);
-                    return;
-                }
-
-                var reader = new StreamReader(path);
-                while (reader.Peek() > 0)
-                {
-                    formulas.Add(reader.ReadLine());
-                }
-                reader.Close();
+                ExecuteFromFile(path);
             }
             else
             {
-                var formula = args.Aggregate((v1, v2) => v1 + " " + v2);
-                formulas.Add(formula);
+                ExecuteSingleFormula(args);
+            }
+        }
+
+        private static void ExecuteFromFile(string path)
+        {
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("Such file doesn't exist: " + path);
+                return;
             }
 
-            for (int formulaIndex = 0; formulaIndex < formulas.Count; formulaIndex++)
+            var reader = new StreamReader(path);
+            var formulaNumber = 1;
+            while (reader.Peek() > 0)
             {
-                string formula = formulas[formulaIndex];
-                if (formulas.Count > 1)
+                var line = reader.ReadLine();
+                if (Comments.Any(v => line.StartsWith(v)))
                 {
-                    Console.WriteLine($"{formulaIndex + 1}. Formula: {formula}");
+                    Console.WriteLine(line);
+                    continue;
                 }
 
-                ProcessFormula(formula);
+                Console.WriteLine($"Formula #{formulaNumber++}");
+                ProcessFormula(line);
+            }
+            reader.Close();
+        }
 
-                if (formulas.Count > 1)
+        private static void ExecuteSingleFormula(string[] args)
+        {
+            var formula = args.Aggregate((v1, v2) => v1 + " " + v2);
+            ProcessFormula(formula);
+        }
+
+        private static void ExecuteEndlessInput()
+        {
+            int formulaCounter = 1;
+            while (true)
+            {
+                Console.Write($"{formulaCounter++}. ");
+                var line = Console.ReadLine();
+                if (line == "exit")
                 {
-                    Console.WriteLine(Environment.NewLine);
+                    break;
                 }
+                ProcessFormula(line);
             }
         }
 
