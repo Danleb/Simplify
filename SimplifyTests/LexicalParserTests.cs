@@ -8,15 +8,23 @@ namespace SimplifyTests
         [Test]
         public void Empty()
         {
-            var parser = new SimplifyLexicalParser("");
+            var parser = new LexicalParser("");
             var tokens = parser.Parse();
             Assert.AreEqual(0, tokens.Count);
         }
 
         [Test]
+        public void SingleCharacter()
+        {
+            var parser = new LexicalParser("a");
+            var tokens = parser.Parse();
+            Assert.AreEqual(1, tokens.Count);
+        }
+
+        [Test]
         public void True()
         {
-            var parser = new SimplifyLexicalParser("TRUE");
+            var parser = new LexicalParser("TRUE");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.LiteralTrue, tokens[0].TokenType);
         }
@@ -24,7 +32,7 @@ namespace SimplifyTests
         [Test]
         public void False()
         {
-            var parser = new SimplifyLexicalParser("FALSE");
+            var parser = new LexicalParser("FALSE");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.LiteralFalse, tokens[0].TokenType);
         }
@@ -32,7 +40,7 @@ namespace SimplifyTests
         [Test]
         public void TrueInBrackets()
         {
-            var parser = new SimplifyLexicalParser("(TRUE)");
+            var parser = new LexicalParser("(TRUE)");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.OpenBracket, tokens[0].TokenType);
             Assert.AreEqual(TokenType.LiteralTrue, tokens[1].TokenType);
@@ -42,7 +50,7 @@ namespace SimplifyTests
         [Test]
         public void FalseInBrackets()
         {
-            var parser = new SimplifyLexicalParser("(FALSE)");
+            var parser = new LexicalParser("(FALSE)");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.OpenBracket, tokens[0].TokenType);
             Assert.AreEqual(TokenType.LiteralFalse, tokens[1].TokenType);
@@ -52,7 +60,7 @@ namespace SimplifyTests
         [Test]
         public void OrTrueFalse()
         {
-            var parser = new SimplifyLexicalParser("(OR TRUE FALSE)");
+            var parser = new LexicalParser("(OR TRUE FALSE)");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.OpenBracket, tokens[0].TokenType);
             Assert.AreEqual(TokenType.OperatorOr, tokens[1].TokenType);
@@ -64,7 +72,7 @@ namespace SimplifyTests
         [Test]
         public void AndTrueFalse()
         {
-            var parser = new SimplifyLexicalParser("(AND TRUE FALSE)");
+            var parser = new LexicalParser("(AND TRUE FALSE)");
             var tokens = parser.Parse();
             Assert.AreEqual(TokenType.OpenBracket, tokens[0].TokenType);
             Assert.AreEqual(TokenType.OperatorAnd, tokens[1].TokenType);
@@ -76,7 +84,7 @@ namespace SimplifyTests
         [Test]
         public void IdempotenticRule1()
         {
-            var parser = new SimplifyLexicalParser("(IFF p (AND p p))");
+            var parser = new LexicalParser("(IFF p (AND p p))");
             var tokens = parser.Parse();
 
             Assert.AreEqual(TokenType.OpenBracket, tokens[0].TokenType);

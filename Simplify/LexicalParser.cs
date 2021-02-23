@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Simplifing
 {
-    public class SimplifyLexicalParser
+    public class LexicalParser
     {
         private static readonly Dictionary<string, Token> StaticTokens = new Dictionary<string, Token>{
             {"AND", new Token(TokenType.OperatorAnd) },
@@ -28,7 +28,7 @@ namespace Simplifing
         private List<string> _variableNames = new List<string>();
         private List<Token> _tokens = new List<Token>();
 
-        public SimplifyLexicalParser(string input)
+        public LexicalParser(string input)
         {
             Input = input;
         }
@@ -64,12 +64,13 @@ namespace Simplifing
 
                 if (nextToken == null)
                 {
-                    var staticTokenMinIndex = StaticTokens.Keys.Select(name => Input.IndexOf(name, currentIndex))
-                            .OrderBy(v => v)
-                            .FirstOrDefault(v => v > -1);
-                    if (staticTokenMinIndex < currentIndex)
+                    var staticTokenIndexes = StaticTokens.Keys.Select(name => Input.IndexOf(name, currentIndex))
+                            .OrderBy(v => v);
+
+                    int staticTokenMinIndex = -1;
+                    if (!staticTokenIndexes.All(v => v == -1))
                     {
-                        staticTokenMinIndex = -1;
+                        staticTokenMinIndex = staticTokenIndexes.FirstOrDefault(v => v > -1);
                     }
 
                     var nextSpaceIndex = Input.IndexOf(Space, currentIndex);
@@ -95,7 +96,7 @@ namespace Simplifing
                     {
                         if (!char.IsLetter(character))
                         {
-                            throw new Exception($"Unacceptable character in variable name: {character}");
+                            throw new LexicalException($"Unacceptable character in variable name: {character}.");
                         }
                     }
 
@@ -113,7 +114,7 @@ namespace Simplifing
 
                 if (nextToken == null)
                 {
-                    throw new Exception("Failed to parse next token: " + Input.Substring(currentIndex));
+                    throw new LexicalException($"Failed to parse next token: {Input.Substring(currentIndex)}.");
                 }
                 else
                 {

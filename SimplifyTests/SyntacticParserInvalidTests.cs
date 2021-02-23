@@ -1,33 +1,37 @@
 ﻿using NUnit.Framework;
-using Simplifing;
 
 namespace SimplifyTests
 {
     public class SyntacticParserInvalidTests
     {
-        public static void CheckIsInvalid(string formula, bool expectedIsValid = false)
+        [Test]
+        public void TrueTrue()
         {
-            var simplify = new Simplify(formula);
-            var isValid = simplify.Check();
-            Assert.AreEqual(expectedIsValid, isValid);
+            AssertFormula.ThrowsSyntaxException("TRUE TRUE");
         }
 
         [Test]
-        public void Test()
+        public void IFF_OR_A_B_AND_A_B()
         {
-            CheckIsInvalid("IFF OR a b AND a b");
+            AssertFormula.ThrowsSyntaxException("IFF OR a b AND a b");
         }
 
         [Test]
         public void OrA_B()
         {
-            CheckIsInvalid("OR a b", false);
+            AssertFormula.ThrowsSyntaxException("OR a b");
+        }
+
+        [Test]
+        public void OpenBracket()
+        {
+            AssertFormula.ThrowsSyntaxException("(");
         }
 
         [Test]
         public void TrueAndFalse()
         {
-            CheckIsInvalid("(AND TRUE FALSE)");
+            AssertFormula.IsInvalid("(AND TRUE FALSE)");
         }
     }
 }

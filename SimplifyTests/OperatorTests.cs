@@ -7,44 +7,44 @@ namespace SimplifyTests
         [Test]
         public void OperatorOr()
         {
-            SyntacticParserTests.CheckIsValid("OR TRUE TRUE");
-            SyntacticParserTests.CheckIsValid("OR TRUE FALSE");
-            SyntacticParserTests.CheckIsValid("OR FALSE TRUE");
-            SyntacticParserTests.CheckIsValid("OR FALSE FALSE", false);
+            AssertFormula.IsValid("(OR TRUE TRUE)");
+            AssertFormula.IsValid("(OR TRUE FALSE)");
+            AssertFormula.IsValid("(OR FALSE TRUE)");
+            AssertFormula.IsInvalid("(OR FALSE FALSE)");
         }
 
         [Test]
         public void OperatorAnd()
         {
-            SyntacticParserTests.CheckIsValid("AND TRUE TRUE");
-            SyntacticParserTests.CheckIsValid("AND TRUE FALSE", false);
-            SyntacticParserTests.CheckIsValid("AND FALSE TRUE", false);
-            SyntacticParserTests.CheckIsValid("AND FALSE FALSE", false);
+            AssertFormula.IsValid("(AND TRUE TRUE)");
+            AssertFormula.IsInvalid("(AND TRUE FALSE)");
+            AssertFormula.IsInvalid("(AND FALSE TRUE)");
+            AssertFormula.IsInvalid("(AND FALSE FALSE)");
         }
 
         [Test]
         public void OperatorNot()
         {
-            SyntacticParserTests.CheckIsValid("NOT FALSE");
-            SyntacticParserTests.CheckIsValid("NOT TRUE", false);
+            AssertFormula.IsValid("(NOT FALSE)");
+            AssertFormula.IsInvalid("(NOT TRUE)");
         }
 
         [Test]
         public void OperatorIFF()
         {
-            SyntacticParserTests.CheckIsValid("IFF TRUE TRUE");
-            SyntacticParserTests.CheckIsValid("IFF FALSE FALSE");
-            SyntacticParserTests.CheckIsValid("IFF TRUE FALSE", false);
-            SyntacticParserTests.CheckIsValid("IFF FALSE TRUE", false);
+            AssertFormula.IsValid("(IFF TRUE TRUE)");
+            AssertFormula.IsValid("(IFF FALSE FALSE)");
+            AssertFormula.IsInvalid("(IFF TRUE FALSE)");
+            AssertFormula.IsInvalid("(IFF FALSE TRUE)");
         }
 
         [Test]
         public void OperatorIMPLIES()
         {
-            SyntacticParserTests.CheckIsValid("IMPLIES TRUE TRUE");
-            SyntacticParserTests.CheckIsValid("IMPLIES TRUE FALSE", false);
-            SyntacticParserTests.CheckIsValid("IMPLIES FALSE FALSE");
-            SyntacticParserTests.CheckIsValid("IMPLIES FALSE TRUE");
+            AssertFormula.IsValid("(IMPLIES TRUE TRUE)");
+            AssertFormula.IsInvalid("(IMPLIES TRUE FALSE)");
+            AssertFormula.IsValid("(IMPLIES FALSE FALSE)");
+            AssertFormula.IsValid("(IMPLIES FALSE TRUE)");
         }
     }
 }

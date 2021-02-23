@@ -5,6 +5,8 @@
         public TokenType TokenType { get; }
         public string VariableName { get; }
         public int VariableIndex { get; }
+        public int StartIndex { get; }
+        public int Length { get; }
 
         public Token(TokenType tokenType)
         {

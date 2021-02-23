@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Simplifing;
 using System;
+using System.Threading;
 
 namespace SimplifyTests
 {
@@ -10,9 +11,13 @@ namespace SimplifyTests
         [Test]
         public void EmptyArguments()
         {
-            using ConsoleOutputReader output = new ConsoleOutputReader();
-            Program.Main(Array.Empty<string>());
-            Assert.AreEqual("Empty formula input.", output.ReadLine());
+            Thread t = new Thread(() =>
+            {
+                using ConsoleOutputReader output = new ConsoleOutputReader();
+                Program.Main(Array.Empty<string>());
+                Assert.AreEqual("Empty formula input.", output.ReadLine());
+            });
+
         }
 
         [Test]

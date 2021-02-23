@@ -12,12 +12,12 @@ namespace Simplifing
 
         public List<string> Contraarguments { get; private set; } = new List<string>();
 
-        private SimplifyLexicalParser _lexicalParser;
+        private LexicalParser _lexicalParser;
 
         public Simplify(string input)
         {
             Input = input;
-            _lexicalParser = new SimplifyLexicalParser(input);
+            _lexicalParser = new LexicalParser(input);
         }
 
         public bool Check()
@@ -78,66 +78,99 @@ namespace Simplifing
 
         private Node CreateTree(List<Token> tokens)
         {
-            return CreateTree(tokens, 0, out _);
+            var node = CreateTree(tokens, 0, out var parsingEndIndex);
+            if (parsingEndIndex != tokens.Count)
+            {
+                throw new SyntaxException("End of formula was expected.");
+            }
+            return node;
         }
 
-        private Node CreateTree(List<Token> tokens, int startIndex, out int endIndex, bool isSubFormula = true)
+        private Node CreateTree(List<Token> tokens, int startIndex, out int parsingEndIndex, bool isSubFormula = true)
         {
+            if (startIndex >= tokens.Count)
+            {
+                if (isSubFormula)
+                {
+                    throw new SyntaxException("Unexpected end of formula. Opening b");
+                }
+                else
+                {
+                    throw new SyntaxException("Unexpected end of formula. Operator was expected.");
+                }
+            }
+
             var token = tokens[startIndex];
 
-            switch (token.TokenType)
+            if (isSubFormula)
             {
-                case TokenType.OpenBracket:
-                    {
-                        startIndex++;
-                        var node = CreateTree(tokens, startIndex, out endIndex);
-                        if (tokens[endIndex].TokenType != TokenType.CloseBracket)
+                switch (token.TokenType)
+                {
+                    case TokenType.LiteralTrue:
+                    case TokenType.LiteralFalse:
+                    case TokenType.Variable:
                         {
-                            throw new Exception("Missing closing bracket after the expression.");
+                            var node = new Node(token);
+                            parsingEndIndex = startIndex + 1;
+                            return node;
                         }
-                        endIndex++;
-                        return node;
-                    }
-                case TokenType.CloseBracket:
-                    {
-                        endIndex = startIndex + 1;
-                        return null;
-                    }
-                case TokenType.LiteralTrue:
-                case TokenType.LiteralFalse:
-                    {
-                        var node = new Node(token);
-                        endIndex = startIndex + 1;
-                        return node;
-                    }
-                case TokenType.OperatorAnd:
-                case TokenType.OperatorOr:
-                case TokenType.OperatorImplies:
-                case TokenType.OperatorIIF:
-                    {
-                        startIndex++;
-                        var child1 = CreateTree(tokens, startIndex, out var endIndex1);
-                        var child2 = CreateTree(tokens, endIndex1, out endIndex);
-                        var node = new Node(token, child1, child2);
-                        return node;
-                    }
-                case TokenType.OpetatorNot:
-                    {
-                        startIndex++;
-                        var child1 = CreateTree(tokens, startIndex, out endIndex);
-                        var node = new Node(token, child1);
-                        return node;
-                    }
-                case TokenType.Variable:
-                    {
-                        var node = new Node(token);
-                        endIndex = startIndex + 1;
-                        return node;
-                    }
-                default:
-                    {
-                        throw new Exception("Unexpected token type:" + token.TokenType);
-                    }
+                    case TokenType.OpenBracket:
+                        {
+                            var nextStartIndex = startIndex + 1;
+                            var node = CreateTree(tokens, nextStartIndex, out parsingEndIndex, false);
+                            if (parsingEndIndex >= tokens.Count || tokens[parsingEndIndex].TokenType != TokenType.CloseBracket)
+                            {
+                                throw new SyntaxException("Closing bracket is missing after the expression.");
+                            }
+                            if (startIndex == 0 && parsingEndIndex != tokens.Count - 1)
+                            {
+                                throw new SyntaxException("End of formula was expected.");
+                            }
+
+                            parsingEndIndex++;
+                            return node;
+                        }
+                    default:
+                        {
+                            throw new SyntaxException($"Unexpected token type: {token.TokenType}. Opening bracket was expected.");
+                        }
+                }
+            }
+            else
+            {
+                switch (token.TokenType)
+                {
+                    case TokenType.OperatorAnd:
+                    case TokenType.OperatorOr:
+                        {
+                            startIndex++;
+                            //todo add parsing list of arguments
+                            var child1 = CreateTree(tokens, startIndex, out var endIndex1);
+                            var child2 = CreateTree(tokens, endIndex1, out parsingEndIndex);
+                            var node = new Node(token, child1, child2);
+                            return node;
+                        }
+                    case TokenType.OperatorImplies:
+                    case TokenType.OperatorIIF:
+                        {
+                            startIndex++;
+                            var child1 = CreateTree(tokens, startIndex, out var endIndex1);
+                            var child2 = CreateTree(tokens, endIndex1, out parsingEndIndex);
+                            var node = new Node(token, child1, child2);
+                            return node;
+                        }
+                    case TokenType.OpetatorNot:
+                        {
+                            startIndex++;
+                            var child1 = CreateTree(tokens, startIndex, out parsingEndIndex);
+                            var node = new Node(token, child1);
+                            return node;
+                        }
+                    default:
+                        {
+                            throw new SyntaxException($"Unexpected token type: {token.TokenType}. Operator was expected.");
+                        }
+                }
             }
         }
     }
