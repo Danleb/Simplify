@@ -47,9 +47,10 @@ namespace Simplifing
             {
                 Token nextToken = null;
 
-                while (Input[currentIndex] == Space)
+                if (Input[currentIndex] == Space)
                 {
                     currentIndex++;
+                    continue;
                 }
 
                 foreach (var (name, token) in StaticTokens)

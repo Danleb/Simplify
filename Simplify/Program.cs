@@ -44,13 +44,14 @@ namespace Simplifing
             while (reader.Peek() > 0)
             {
                 var line = reader.ReadLine();
-                if (Comments.Any(v => line.StartsWith(v)))
+                if (Comments.Any(v => line.StartsWith(v)) || line == string.Empty)
                 {
                     Console.WriteLine(line);
                     continue;
                 }
 
                 Console.WriteLine($"Formula #{formulaNumber++}");
+                Console.WriteLine(line);
                 ProcessFormula(line);
             }
             reader.Close();
